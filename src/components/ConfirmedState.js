@@ -1,25 +1,17 @@
 import React from 'react';
 
-const ConfirmedState = ({name, state, setState}) => {
+const ConfirmedState = ({name, onDelete, onBack}) => {
   return (
     <div>
       <h2>¿Seguro que quieres eliminar {name}?</h2>
       <button
         onClick={() => {
-          setState({
-            ...state,
-            deleted: true,
-          }
-          )
+          onDelete();
         }}
       >Si, eliminar</button>
       <button
         onClick={() => {
-          setState({
-            ...state,
-            deleted: false,
-            confirmed: false
-          })
+          onBack();
         }}
       >No, volver</button>
     </div>

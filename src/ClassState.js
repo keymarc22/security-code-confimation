@@ -1,6 +1,6 @@
 import React from "react";
-import { Loading } from "./Loading";
-import { Error } from "./Error";
+import { Loading } from "./components/Loading";
+import { Error } from "./components/Error";
 
 const SECURITY_CODE = 'paradigma';
 
