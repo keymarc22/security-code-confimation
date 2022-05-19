@@ -6,7 +6,7 @@ import { ConfirmedState } from "./components/ConfirmedState";
 const SECURITY_CODE = "paradigma";
 
 const initialState = {
-  value: "paradigma",
+  value: "",
   error: false,
   loading: false,
   deleted: false,
@@ -14,36 +14,45 @@ const initialState = {
 };
 
 const reducerObject = (state, payload) => ({
-  ERROR: {
+  [actionTypes.error]: {
     ...state,
     error: true,
     loading: false,
   },
-  CHECK: {
+  [actionTypes.check]: {
     ...state,
     loading: true,
   },
-  CONFIRM: {
+  [actionTypes.confirm]: {
     ...state,
     error: false,
     loading: false,
     confirmed: true,
   },
-  DELETE: {
+  [actionTypes.delete]: {
     ...state,
     deleted: true,
   },
-  RESET: {
+  [actionTypes.reset]: {
     ...state,
     confirmed: false,
     deleted: false,
     value: "",
   },
-  WRITE: {
+  [actionTypes.write]: {
     ...state,
-    value: payload
-  }
+    value: payload,
+  },
 });
+
+const actionTypes = {
+  confirm: "CONFIRM",
+  check: "CHECK",
+  reset: "RESET",
+  error: "ERROR",
+  delete: "DELETE",
+  write: "WRITE",
+};
 
 const reducer = (state, action) => {
   if (reducerObject(state)[action.type]) {
@@ -56,32 +65,36 @@ const reducer = (state, action) => {
 function UseReducer({ name }) {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
+  const onCheck = () => dispatch({ type: actionTypes.check })
+  const onDelete = () => dispatch({ type: actionTypes.delete });
+  const onReset = () => dispatch({ type: actionTypes.reset });
+
+  const onConfirm = () => {
+    dispatch({
+      type:
+        state.value === SECURITY_CODE ? actionTypes.confirm : actionTypes.error,
+    });
+  };
+
+  const onWrite = ({target: { value }}) => {
+    dispatch({
+      type: "WRITE",
+      payload: value,
+    });
+  };
+
   React.useEffect(() => {
     if (state.loading) {
       setTimeout(() => {
-        dispatch({
-          type: state.value === SECURITY_CODE ? "CONFIRM" : "ERROR",
-        });
+        onConfirm();
       }, 3000);
     }
   }, [state.loading]);
 
   if (state.confirmed && !state.deleted && !state.error) {
-    return (
-      <ConfirmedState
-        name={name}
-        onDelete={() => {
-          dispatch({ type: "DELETE" })
-        }}
-        onReset={() => {
-          dispatch({ type: "RESET" })
-        }}
-      />
-    );
+    return <ConfirmedState name={name} onDelete={onDelete} onReset={onReset} />;
   } else if (state.deleted && state.confirmed && !state.error) {
-    return <EndState name={name} onReset={() => {
-      dispatch({ type: "RESET" })
-    }} />;
+    return <EndState name={name} onReset={onReset} />;
   } else {
     return (
       <InitialState
@@ -89,10 +102,8 @@ function UseReducer({ name }) {
         error={state.error}
         loading={state.loading}
         value={state.value}
-        onWrite={dispatch}
-        onCheck={() => {
-          dispatch({ type: "CHECK" })
-        }}
+        onWrite={onWrite}
+        onCheck={onCheck}
       />
     );
   }
