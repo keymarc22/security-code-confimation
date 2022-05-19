@@ -17,7 +17,9 @@ const InitialState = ({ name, error, loading, value, onWrite, onCheck }) => {
         placeholder="Codigo de seguridad"
         value={value}
         onChange={(event) => {
-          onWrite(event.target.value);
+          onWrite({
+            type: 'WRITE', payload: event.target.value
+          });
         }}
       />
       <button

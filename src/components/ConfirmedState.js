@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConfirmedState = ({name, onDelete, onBack}) => {
+const ConfirmedState = ({name, onDelete, onReset}) => {
   return (
     <div>
       <h2>¿Seguro que quieres eliminar {name}?</h2>
@@ -11,7 +11,7 @@ const ConfirmedState = ({name, onDelete, onBack}) => {
       >Si, eliminar</button>
       <button
         onClick={() => {
-          onBack();
+          onReset();
         }}
       >No, volver</button>
     </div>
